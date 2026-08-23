@@ -1,46 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const ROOMS = [
-    {
-        id: "lobby",
-        name: "Common Lobby",
-        x: 100,
-        y: 100,
-        width: 300,
-        height: 180,
-    },
-    {
-        id: "meeting",
-        name: "Meeting Room",
-        x: 600,
-        y: 100,
-        width: 300,
-        height: 180,
-    },
-    {
-        id: "library",
-        name: "Library",
-        x: 100,
-        y: 450,
-        width: 300,
-        height: 180,
-
-        door: {
-            side: "top",
-            position: 150,
-            width: 80
-        }
-    },
-    {
-        id: "coding",
-        name: "Coding Space",
-        x: 600,
-        y: 450,
-        width: 300,
-        height: 180,
-    },
-];
+import avatarImage from "../assets/avatar.svg";
+import { ROOMS } from "../data/campusData";
+import Avatar from "../components/campus/Avatar";
 
 function Campus() {
     const navigate = useNavigate();
@@ -50,6 +12,7 @@ function Campus() {
     });
 
     const [nearRoom, setNearRoom] = useState(null);
+    const [direction, setDirection] = useState("down");
 
     const keys = useRef({
         w: false,
@@ -59,41 +22,46 @@ function Campus() {
     });
 
     const getNearbyRoom = (x, y) => {
-        const AVATAR_SIZE = 40;
-        const INTERACTION_DISTANCE = 50;
+        const AVATAR_SIZE = 50;
+        const INTERACTION_DISTANCE = 70;
 
         return ROOMS.find((room) => {
-            const door = room.door;
+            if (!room.door) return false;
 
-            if (!door) return false;
+            const door = room.door;
 
             let doorX;
             let doorY;
 
-            if (door.side === "top" || door.side === "bottom") {
-                doorX = room.x + door.position;
-                doorY =
-                    door.side === "top"
-                        ? room.y
-                        : room.y + room.height;
-            } else {
-                doorX =
-                    door.side === "left"
-                        ? room.x
-                        : room.x + room.width;
+            if (door.side === "top") {
+                doorX = room.x + door.position + door.width / 2;
+                doorY = room.y;
+            }
 
-                doorY = room.y + door.position;
+            if (door.side === "bottom") {
+                doorX = room.x + door.position + door.width / 2;
+                doorY = room.y + room.height;
+            }
+
+            if (door.side === "left") {
+                doorX = room.x;
+                doorY = room.y + door.position + door.width / 2;
+            }
+
+            if (door.side === "right") {
+                doorX = room.x + room.width;
+                doorY = room.y + door.position + door.width / 2;
             }
 
             const avatarCenterX = x + AVATAR_SIZE / 2;
             const avatarCenterY = y + AVATAR_SIZE / 2;
 
-            const distance = Math.sqrt(
-                Math.pow(avatarCenterX - doorX, 2) +
-                Math.pow(avatarCenterY - doorY, 2)
+            const distance = Math.hypot(
+                avatarCenterX - doorX,
+                avatarCenterY - doorY
             );
 
-            return distance < INTERACTION_DISTANCE;
+            return distance <= INTERACTION_DISTANCE;
         });
     };
 
@@ -151,17 +119,88 @@ function Campus() {
     useEffect(() => {
         let animationFrame;
 
-        const AVATAR_SIZE = 40;
+        const AVATAR_SIZE = 50;
         const SPEED = 4;
 
         const checkCollision = (x, y) => {
             return ROOMS.some((room) => {
-                return (
-                    x < room.x + room.width &&
-                    x + AVATAR_SIZE > room.x &&
-                    y < room.y + room.height &&
-                    y + AVATAR_SIZE > room.y
-                );
+                const avatarLeft = x;
+                const avatarRight = x + AVATAR_SIZE;
+                const avatarTop = y;
+                const avatarBottom = y + AVATAR_SIZE;
+
+                const roomLeft = room.x;
+                const roomRight = room.x + room.width;
+                const roomTop = room.y;
+                const roomBottom = room.y + room.height;
+
+                // First check if avatar is inside the room.
+                const insideRoom =
+                    avatarLeft >= roomLeft &&
+                    avatarRight <= roomRight &&
+                    avatarTop >= roomTop &&
+                    avatarBottom <= roomBottom;
+
+                if (insideRoom) {
+                    return false;
+                }
+
+                // No door = entire room is solid.
+                if (!room.door) {
+                    return (
+                        avatarLeft < roomRight &&
+                        avatarRight > roomLeft &&
+                        avatarTop < roomBottom &&
+                        avatarBottom > roomTop
+                    );
+                }
+
+                const door = room.door;
+
+                let doorLeft;
+                let doorRight;
+                let doorTop;
+                let doorBottom;
+
+                if (door.side === "top" || door.side === "bottom") {
+                    doorLeft = roomLeft + door.position;
+                    doorRight = doorLeft + door.width;
+
+                    if (door.side === "top") {
+                        doorTop = roomTop - 10;
+                        doorBottom = roomTop + 20;
+                    } else {
+                        doorTop = roomBottom - 20;
+                        doorBottom = roomBottom + 10;
+                    }
+                }
+
+                if (door.side === "left" || door.side === "right") {
+                    doorTop = roomTop + door.position;
+                    doorBottom = doorTop + door.width;
+
+                    if (door.side === "left") {
+                        doorLeft = roomLeft - 10;
+                        doorRight = roomLeft + 20;
+                    } else {
+                        doorLeft = roomRight - 20;
+                        doorRight = roomRight + 10;
+                    }
+                }
+
+                const touchingRoom =
+                    avatarLeft < roomRight &&
+                    avatarRight > roomLeft &&
+                    avatarTop < roomBottom &&
+                    avatarBottom > roomTop;
+
+                const touchingDoor =
+                    avatarLeft < doorRight &&
+                    avatarRight > doorLeft &&
+                    avatarTop < doorBottom &&
+                    avatarBottom > doorTop;
+
+                return touchingRoom && !touchingDoor;
             });
         };
 
@@ -169,11 +208,8 @@ function Campus() {
             setPosition((prev) => {
                 let { x, y } = prev;
 
-                // -------------------------
-                // X movement
-                // -------------------------
-
                 let nextX = x;
+                let nextY = y;
 
                 if (keys.current.a) {
                     nextX -= SPEED;
@@ -183,16 +219,9 @@ function Campus() {
                     nextX += SPEED;
                 }
 
-                // Check X collision only
                 if (!checkCollision(nextX, y)) {
                     x = nextX;
                 }
-
-                // -------------------------
-                // Y movement
-                // -------------------------
-
-                let nextY = y;
 
                 if (keys.current.w) {
                     nextY -= SPEED;
@@ -202,20 +231,16 @@ function Campus() {
                     nextY += SPEED;
                 }
 
-                // Check Y collision only
                 if (!checkCollision(x, nextY)) {
                     y = nextY;
                 }
-
-                // -------------------------
-                // Campus boundaries
-                // -------------------------
 
                 const maxX = window.innerWidth - AVATAR_SIZE;
                 const maxY = window.innerHeight - AVATAR_SIZE;
 
                 x = Math.max(0, Math.min(x, maxX));
                 y = Math.max(0, Math.min(y, maxY));
+
                 const nearbyRoom = getNearbyRoom(x, y);
                 setNearRoom(nearbyRoom ? nearbyRoom.id : null);
 
@@ -229,6 +254,34 @@ function Campus() {
 
         return () => {
             cancelAnimationFrame(animationFrame);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleDirection = (event) => {
+            const key = event.key.toLowerCase();
+
+            if (key === "w" || key === "arrowup") {
+                setDirection("up");
+            }
+
+            if (key === "s" || key === "arrowdown") {
+                setDirection("down");
+            }
+
+            if (key === "a" || key === "arrowleft") {
+                setDirection("left");
+            }
+
+            if (key === "d" || key === "arrowright") {
+                setDirection("right");
+            }
+        };
+
+        window.addEventListener("keydown", handleDirection);
+
+        return () => {
+            window.removeEventListener("keydown", handleDirection);
         };
     }, []);
 
@@ -300,17 +353,10 @@ function Campus() {
             )}
 
             {/* Avatar */}
-            <div
-                style={{
-                    position: "absolute",
-                    left: position.x,
-                    top: position.y,
-                    width: "40px",
-                    height: "40px",
-                    backgroundColor: "blue",
-                    borderRadius: "50%",
-                    zIndex: 10,
-                }}
+            <Avatar
+                position={position}
+                direction={direction}
+                image={avatarImage}
             />
         </div>
     );
