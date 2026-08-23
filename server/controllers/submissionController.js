@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
+
 const Submission = require("../models/Submission");
+const Problem = require("../models/Problem");
+
+const { judgeSubmission } = require("../services/judgeService");
 
 const createSubmission = async (req, res) => {
     try {
@@ -53,6 +57,17 @@ const createSubmission = async (req, res) => {
             });
         }
 
+        // Check that the problem exists
+        const problem = await Problem.findById(problemId);
+
+        if (!problem) {
+            return res.status(404).json({
+                success: false,
+                message: "Problem not found"
+            });
+        }
+
+        // Create submission as pending first
         const submission = await Submission.create({
             userId,
             problemId,
@@ -62,9 +77,20 @@ const createSubmission = async (req, res) => {
             status: "pending"
         });
 
+        // Run the submitted code against hidden test cases
+        const result = await judgeSubmission(submission, problem);
+
+        // Update submission with judge result
+        submission.status = result.status;
+        submission.score = result.score;
+        submission.executionTime = result.executionTime;
+        submission.memoryUsed = result.memoryUsed;
+
+        await submission.save();
+
         return res.status(201).json({
             success: true,
-            message: "Code submitted successfully",
+            message: "Code judged successfully",
             submission
         });
 

@@ -5,7 +5,9 @@ const getLeaderboard = async (req, res) => {
     try {
         const { competitionId } = req.query;
 
-        const matchStage = {};
+        const matchStage = {
+            status: "accepted"
+        };
 
         // Filter by competition if provided
         if (competitionId) {
@@ -24,46 +26,77 @@ const getLeaderboard = async (req, res) => {
             {
                 $match: matchStage
             },
+
+            // Best accepted submission for each user + problem
+            {
+                $sort: {
+                    userId: 1,
+                    problemId: 1,
+                    score: -1,
+                    executionTime: 1,
+                    createdAt: 1
+                }
+            },
+
             {
                 $group: {
-                    _id: "$userId",
+                    _id: {
+                        userId: "$userId",
+                        problemId: "$problemId"
+                    },
+                    score: {
+                        $first: "$score"
+                    },
+                    executionTime: {
+                        $first: "$executionTime"
+                    },
+                    submittedAt: {
+                        $first: "$createdAt"
+                    }
+                }
+            },
+
+            // Calculate total score and execution time for each user
+            {
+                $group: {
+                    _id: "$_id.userId",
                     totalScore: {
                         $sum: "$score"
                     },
-                    submissions: {
+                    totalExecutionTime: {
+                        $sum: "$executionTime"
+                    },
+                    problemsSolved: {
                         $sum: 1
+                    },
+                    lastSubmissionAt: {
+                        $max: "$submittedAt"
                     }
                 }
             },
+
+            // Higher score first.
+            // If score is equal, lower execution time first.
+            // If both are equal, earlier submission first.
             {
                 $sort: {
-                    totalScore: -1
-                }
-            },
-            {
-                $setWindowFields: {
-                    sortBy: {
-                        totalScore: -1
-                    },
-                    output: {
-                        rank: {
-                            $rank: {}
-                        }
-                    }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    userId: "$_id",
-                    rank: 1,
-                    totalScore: 1,
-                    submissions: 1
+                    totalScore: -1,
+                    totalExecutionTime: 1,
+                    lastSubmissionAt: 1
                 }
             }
         ]);
 
-        res.status(200).json({
+        // Add rank manually because MongoDB $rank
+        // cannot use multiple sort fields.
+        let currentRank = 0;
+
+        leaderboard.forEach((student, index) => {
+            currentRank = index + 1;
+            student.rank = currentRank;
+        });
+
+        return res.status(200).json({
             success: true,
             leaderboard
         });
@@ -71,7 +104,7 @@ const getLeaderboard = async (req, res) => {
     } catch (error) {
         console.error("Leaderboard error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
