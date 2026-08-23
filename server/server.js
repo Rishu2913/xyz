@@ -14,9 +14,12 @@ app.use(express.json());
 
 const roomRoutes = require("./routes/roomRoutes");
 const submissionRoutes = require("./routes/submissionRoutes");
+const leaderboardRoutes = require("./routes/leaderboardRoutes");
+
 
 app.use("/api/rooms", roomRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 app.get("/", (req, res) => {
     res.json({
