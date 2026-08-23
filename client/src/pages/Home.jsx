@@ -6,6 +6,7 @@ import exploreIcon from "../assests/explore.png";
 import worldsIcon from "../assests/worlds.png";
 import communityIcon from "../assests/community.png";
 import eventsIcon from "../assests/events.png";
+import { Link } from "react-router-dom";
 
 import homepage from "../assests/homepage.png";
 import exploreYourWorlds from "../assests/explore-your-worlds.png";
@@ -71,14 +72,13 @@ function Home() {
                     </div>
 
                     {/* LOGIN */}
-                    <a href="/login" className="login-btn">
+                    <Link to="/login" className="login-btn">
                         Login
-                    </a>
+                    </Link>
 
-                    {/* GET STARTED */}
-                    <a href="/login" className="started-btn">
+                    <Link to="/login" className="started-btn">
                         Get Started
-                    </a>
+                    </Link>
 
                 </div>
 
