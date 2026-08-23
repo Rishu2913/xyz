@@ -156,8 +156,8 @@ const OBJECT_COLLISIONS = [
         id: "coding-table",
         x: 1120,
         y: 310,
-        width: 120,
-        height: 80,
+        width: 80,
+        height: 60,
     },
 
 
@@ -234,8 +234,8 @@ const OBJECT_COLLISIONS = [
         id: "central-plant",
         x: 660,
         y: 390,
-        width: 220,
-        height: 220,
+        width: 160,
+        height: 180,
     },
 
     // Left middle bookshelf
@@ -285,7 +285,7 @@ const OBJECT_COLLISIONS = [
         x: 1080,
         y: 730,
         width: 70,
-        height: 100,
+        height: 60,
     },
 
     {
@@ -293,7 +293,7 @@ const OBJECT_COLLISIONS = [
         x: 1170,
         y: 730,
         width: 70,
-        height: 100,
+        height: 60,
     },
 
     {
@@ -301,7 +301,7 @@ const OBJECT_COLLISIONS = [
         x: 1260,
         y: 730,
         width: 70,
-        height: 100,
+        height: 60,
     },
 
     {
@@ -309,7 +309,7 @@ const OBJECT_COLLISIONS = [
         x: 1350,
         y: 730,
         width: 50,
-        height: 100,
+        height: 60,
     },
 
 
@@ -320,8 +320,8 @@ const OBJECT_COLLISIONS = [
     {
         id: "notice-board",
         x: 1120,
-        y: 500,
-        width: 260,
+        y: 520,
+        width: 190,
         height: 80,
     },
 ];
