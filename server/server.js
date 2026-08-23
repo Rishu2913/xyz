@@ -13,8 +13,10 @@ app.use(cors());
 app.use(express.json());
 
 const roomRoutes = require("./routes/roomRoutes");
+const submissionRoutes = require("./routes/submissionRoutes");
 
 app.use("/api/rooms", roomRoutes);
+app.use("/api/submissions", submissionRoutes);
 
 app.get("/", (req, res) => {
     res.json({
