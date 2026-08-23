@@ -4,6 +4,7 @@ import avatarImage from "../assets/avatar.svg";
 import { ROOMS } from "../data/campusData";
 import Avatar from "../components/campus/Avatar";
 import CampusRoom from "../components/campus/campusRoom";
+import CampusDecoration from "../components/campus/campusDecoration";
 
 function Campus() {
     const navigate = useNavigate();
@@ -296,18 +297,8 @@ function Campus() {
                 overflow: "hidden",
             }}
         >
-            {/* Campus title */}
-            <h1
-                style={{
-                    position: "absolute",
-                    top: 20,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    margin: 0,
-                }}
-            >
-                Virtual Campus
-            </h1>
+            
+            <CampusDecoration />   
 
             {/* Rooms */}
             {ROOMS.map((room) => (
