@@ -14,12 +14,20 @@ const generateToken = (userId) => {
 
 const register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, role } = req.body;
 
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !role) {
             return res.status(400).json({
                 success: false,
-                message: "Username, email and password are required",
+                message: "Username, email, password and role are required",
+                data: null
+            });
+        }
+
+        if (!["student", "teacher"].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: "Role must be either student or teacher",
                 data: null
             });
         }
@@ -44,7 +52,8 @@ const register = async (req, res) => {
         const user = await User.create({
             username,
             email: email.toLowerCase(),
-            password: hashedPassword
+            password: hashedPassword,
+            role
         });
 
         const token = generateToken(user._id.toString());
@@ -56,7 +65,8 @@ const register = async (req, res) => {
                 user: {
                     id: user._id,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    role: user.role
                 },
                 token
             }
@@ -120,6 +130,7 @@ const login = async (req, res) => {
                     id: user._id,
                     username: user.username,
                     email: user.email,
+                    role: user.role,
                     avatar: user.avatar,
                     totalPoints: user.totalPoints,
                     problemsSolved: user.problemsSolved,
