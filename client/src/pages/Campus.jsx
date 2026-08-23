@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import avatarImage from "../assets/avatar.svg";
 import { ROOMS } from "../data/campusData";
 import Avatar from "../components/campus/Avatar";
+import CampusRoom from "../components/campus/campusRoom";
 
 function Campus() {
     const navigate = useNavigate();
@@ -310,27 +311,10 @@ function Campus() {
 
             {/* Rooms */}
             {ROOMS.map((room) => (
-                <div
+                <CampusRoom
                     key={room.id}
-                    style={{
-                        position: "absolute",
-                        left: room.x,
-                        top: room.y,
-                        width: room.width,
-                        height: room.height,
-                        backgroundColor: "#ffffff",
-                        border: "4px solid #333",
-                        borderRadius: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "24px",
-                        fontWeight: "bold",
-                        boxSizing: "border-box",
-                    }}
-                >
-                    {room.name}
-                </div>
+                    room={room}
+                />
             ))}
 
             {nearRoom && (
