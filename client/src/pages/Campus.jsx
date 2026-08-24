@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import OtherAvatar from "../components/campus/OtherAvatar";
 
 import avatarImage from "../assets/avatar.svg";
 import campusMap from "../assets/campus-map.jpeg";
@@ -65,7 +67,7 @@ const ROOMS = [
     {
         id: "library",
         name: "Library Room",
-        route: "/library",
+        route: "https://galgotiasuniversity.refread.com/#/home",
 
         x: 85,
         y: 550,
@@ -706,6 +708,9 @@ function Campus() {
 
     const [meetingDuration, setMeetingDuration] = useState("60");
 
+    const socketRef = useRef(null);
+    const [otherPlayers, setOtherPlayers] = useState({});
+
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(
@@ -1075,6 +1080,14 @@ function Campus() {
                 return;
             }
 
+            if (nearRoom.id === "library") {
+                window.open(
+                    "https://galgotiasuniversity.refread.com/#/home",
+                    "_blank"
+                );
+                return;
+            }
+
             if (nearRoom.id !== "meeting") {
                 return;
             }
@@ -1105,6 +1118,68 @@ function Campus() {
         showLeaderboard,
         showMeetingModal
     ]);
+
+
+    useEffect(() => {
+        const socket = io("http://localhost:5000");
+
+        socketRef.current = socket;
+
+        socket.on("connect", () => {
+            console.log("Connected to multiplayer:", socket.id);
+
+            socket.emit("player:join", {
+                username,
+                x: position.x,
+                y: position.y,
+                direction
+            });
+        });
+
+        socket.on("players:current", (players) => {
+            const playerMap = {};
+
+            players.forEach((player) => {
+                if (player.id !== socket.id) {
+                    playerMap[player.id] = player;
+                }
+            });
+
+            setOtherPlayers(playerMap);
+        });
+
+        socket.on("player:joined", (player) => {
+            setOtherPlayers((current) => ({
+                ...current,
+                [player.id]: player
+            }));
+        });
+
+        socket.on("player:moved", (player) => {
+            setOtherPlayers((current) => ({
+                ...current,
+                [player.id]: {
+                    ...current[player.id],
+                    ...player
+                }
+            }));
+        });
+
+        socket.on("player:left", (playerId) => {
+            setOtherPlayers((current) => {
+                const updated = { ...current };
+
+                delete updated[playerId];
+
+                return updated;
+            });
+        });
+
+        return () => {
+            socket.disconnect();
+            socketRef.current = null;
+        };
+    }, []);
 
     useEffect(() => {
 
@@ -1427,6 +1502,14 @@ function Campus() {
                     x: cameraX,
                     y: cameraY,
                 });
+
+                if (socketRef.current?.connected) {
+                    socketRef.current.emit("player:move", {
+                        x,
+                        y,
+                        direction
+                    });
+                }
 
                 return {
                     x,
@@ -1769,6 +1852,19 @@ function Campus() {
                     AVATAR
                 ================================== */}
 
+                {Object.values(otherPlayers).map((player) => (
+                    <OtherAvatar
+                        key={player.id}
+                        position={{
+                            x: player.x,
+                            y: player.y
+                        }}
+                        direction={player.direction}
+                        image={avatarImage}
+                        username={player.username}
+                    />
+                ))}
+
                 <Avatar
                     position={position}
                     direction={direction}
@@ -1827,6 +1923,43 @@ function Campus() {
                 )} */}
 
             </div>
+
+            {nearRoom?.id === "library" &&
+                !showMeetingModal &&
+                !showLeaderboard && (
+                    <div
+                        style={{
+                            position: "fixed",
+                            bottom: "40px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+
+                            backgroundColor: "rgba(0, 0, 0, 0.9)",
+                            color: "#fff",
+
+                            padding: "14px 24px",
+
+                            fontFamily: "'Courier New', monospace",
+                            fontSize: "17px",
+
+                            zIndex: 100,
+
+                            border: "3px solid #f5d742",
+                            boxShadow: "6px 6px 0px #000",
+
+                            imageRendering: "pixelated",
+                        }}
+                    >
+                        PRESS{" "}
+                        <strong style={{ color: "#f5d742" }}>
+                            E
+                        </strong>{" "}
+                        TO{" "}
+                        <strong>
+                            ENTER LIBRARY
+                        </strong>
+                    </div>
+                )}
 
             {showMeetingModal && userRole === "teacher" && (
                 <div
