@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Campus from "./pages/Campus";
+import CodingSpace from "./pages/CodingSpace";
 
 function Placeholder({ name }) {
     return (
@@ -32,6 +33,11 @@ function App() {
                 <Route
                     path="/lobby"
                     element={<Placeholder name="Common Lobby" />}
+                />
+
+                <Route
+                    path="/coding-space"
+                    element={<CodingSpace />}
                 />
 
                 <Route

@@ -45,22 +45,22 @@ const ROOMS = [
         },
     },
 
-    {
-        id: "coding",
-        name: "Coding Room",
-        route: "/coding-space",
+    // {
+    //     id: "coding",
+    //     name: "Coding Room",
+    //     route: "/coding-space",
 
-        x: 1040,
-        y: 85,
-        width: 390,
-        height: 350,
+    //     x: 1040,
+    //     y: 85,
+    //     width: 390,
+    //     height: 350,
 
-        door: {
-            side: "bottom",
-            position: 165,
-            width: 65,
-        },
-    },
+    //     door: {
+    //         side: "bottom",
+    //         position: 165,
+    //         width: 65,
+    //     },
+    // },
 
     {
         id: "library",
@@ -106,6 +106,14 @@ const ROOMS = [
 //
 // The gaps between boxes are the doors.
 //
+const CODING_INTERACTION = {
+    x: 1130,
+    y: 180,
+    width: 200,
+    height: 80,
+    interactionDistance: 70,
+};
+
 
 const OBJECT_COLLISIONS = [
     // ======================================
@@ -671,6 +679,8 @@ const COLLISION_BOXES = [
 
 function Campus() {
 
+    const [nearCodingSpace, setNearCodingSpace] = useState(false);
+
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(
@@ -747,6 +757,30 @@ function Campus() {
     // ======================================
     // FIND NEARBY ROOM
     // ======================================
+
+    const isNearCodingSpace = (x, y) => {
+        const avatarCenterX = x + AVATAR_SIZE / 2;
+        const avatarCenterY = y + AVATAR_SIZE / 2;
+
+        const left = CODING_INTERACTION.x - 100;
+        const right =
+            CODING_INTERACTION.x +
+            CODING_INTERACTION.width +
+            100;
+
+        const top = CODING_INTERACTION.y - 100;
+        const bottom =
+            CODING_INTERACTION.y +
+            CODING_INTERACTION.height +
+            100;
+
+        return (
+            avatarCenterX >= left &&
+            avatarCenterX <= right &&
+            avatarCenterY >= top &&
+            avatarCenterY <= bottom
+        );
+    };
 
     const getNearbyRoom = (x, y) => {
 
@@ -1052,8 +1086,10 @@ function Campus() {
                 // --------------------------
 
                 const room = getNearbyRoom(x, y);
-
                 setNearRoom(room);
+
+                // const codingNearby = isNearCodingSpace(x, y);
+                // setNearCodingSpace(codingNearby);
 
                 const viewportWidth = viewport.width;
                 const viewportHeight = viewport.height;
@@ -1115,6 +1151,53 @@ function Campus() {
         };
 
     }, []);
+
+    useEffect(() => {
+        const checkCodingDistance = () => {
+            setPosition((currentPosition) => {
+                const nearby = isNearCodingSpace(
+                    currentPosition.x,
+                    currentPosition.y
+                );
+
+                setNearCodingSpace(nearby);
+
+                return currentPosition;
+            });
+        };
+
+        const interval = setInterval(
+            checkCodingDistance,
+            50
+        );
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleCodingInteraction = (event) => {
+            if (
+                event.key.toLowerCase() === "e" &&
+                nearCodingSpace
+            ) {
+                navigate("/coding-space");
+            }
+        };
+
+        window.addEventListener(
+            "keydown",
+            handleCodingInteraction
+        );
+
+        return () => {
+            window.removeEventListener(
+                "keydown",
+                handleCodingInteraction
+            );
+        };
+    }, [nearCodingSpace, navigate]);
 
 
     // ======================================
@@ -1211,6 +1294,22 @@ function Campus() {
                 {/* ==================================
                     COLLISION DEBUG
                 ================================== */}
+
+                {DEBUG_COLLISION && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: CODING_INTERACTION.x - 60,
+                            top: CODING_INTERACTION.y - 60,
+                            width: CODING_INTERACTION.width + 120,
+                            height: CODING_INTERACTION.height + 120,
+                            border: "3px solid yellow",
+                            backgroundColor: "rgba(255, 255, 0, 0.1)",
+                            pointerEvents: "none",
+                            zIndex: 8,
+                        }}
+                    />
+                )}
 
                 {DEBUG_COLLISION &&
                     COLLISION_BOXES.map((box) => (
@@ -1399,18 +1498,42 @@ function Campus() {
                         }}
                     >
 
-                        { Press{" "}
-                        <strong>E</strong>{" "}
-                        to enter{" "}
-                        <strong>
-                            {nearRoom.name}
-                        </strong> }
+                        <>
+                            Press <strong>E</strong> to enter{" "}
+                            <strong>{nearRoom.name}</strong>
+                        </>
 
                     </div>
 
                 )} */}
 
             </div>
+
+            {nearCodingSpace && (
+                <div
+                    style={{
+                        position: "fixed",
+                        bottom: "40px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+
+                        backgroundColor: "rgba(0, 0, 0, 0.85)",
+                        color: "white",
+
+                        padding: "12px 20px",
+                        borderRadius: "8px",
+
+                        fontFamily: "monospace",
+                        fontSize: "16px",
+
+                        zIndex: 100,
+                        border: "2px solid #fff",
+                    }}
+                >
+                    Press <strong>E</strong> to enter{" "}
+                    <strong>Coding Space</strong>
+                </div>
+            )}
 
         </div>
     );
