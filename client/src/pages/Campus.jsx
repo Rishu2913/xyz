@@ -12,6 +12,8 @@ import Avatar from "../components/campus/Avatar";
 const MAP_WIDTH = 1536;
 const MAP_HEIGHT = 1024;
 
+const ZOOM = 1.8;
+
 const AVATAR_SIZE = 50;
 const SPEED = 4;
 
@@ -671,6 +673,16 @@ function Campus() {
 
     const navigate = useNavigate();
 
+    const [viewport, setViewport] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    const [camera, setCamera] = useState({
+        x: 0,
+        y: 0,
+    });
+
     const [position, setPosition] = useState({
         x: 743,
         y: 100,
@@ -866,6 +878,23 @@ function Campus() {
     }, []);
 
 
+
+    useEffect(() => {
+        const handleResize = () => {
+            setViewport({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+
     // ======================================
     // DIRECTION
     // ======================================
@@ -1020,6 +1049,44 @@ function Campus() {
 
                 setNearRoom(room);
 
+                const viewportWidth = viewport.width;
+                const viewportHeight = viewport.height;
+
+                const scaledMapWidth = MAP_WIDTH * ZOOM;
+                const scaledMapHeight = MAP_HEIGHT * ZOOM;
+
+                // Keep avatar roughly in the center
+                let cameraX =
+                    x * ZOOM +
+                    (AVATAR_SIZE * ZOOM) / 2 -
+                    viewportWidth / 2;
+
+                let cameraY =
+                    y * ZOOM +
+                    (AVATAR_SIZE * ZOOM) / 2 -
+                    viewportHeight / 2;
+
+                // Don't show outside the map
+                cameraX = Math.max(
+                    0,
+                    Math.min(
+                        cameraX,
+                        scaledMapWidth - viewportWidth
+                    )
+                );
+
+                cameraY = Math.max(
+                    0,
+                    Math.min(
+                        cameraY,
+                        scaledMapHeight - viewportHeight
+                    )
+                );
+
+                setCamera({
+                    x: cameraX,
+                    y: cameraY,
+                });
 
                 return {
                     x,
@@ -1091,7 +1158,7 @@ function Campus() {
 
                 backgroundColor: "#111",
 
-                overflow: "auto",
+                overflow: "hidden",
 
                 position: "relative",
             }}
@@ -1103,12 +1170,16 @@ function Campus() {
 
             <div
                 style={{
-                    position: "relative",
+                    position: "absolute",
 
                     width: `${MAP_WIDTH}px`,
                     height: `${MAP_HEIGHT}px`,
 
-                    flexShrink: 0,
+                    left: `${-camera.x}px`,
+                    top: `${-camera.y}px`,
+
+                    transform: `scale(${ZOOM})`,
+                    transformOrigin: "top left",
                 }}
             >
 
