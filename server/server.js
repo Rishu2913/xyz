@@ -13,6 +13,9 @@ const roomRoutes = require("./routes/roomRoutes");
 const submissionRoutes = require("./routes/submissionRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
 
+const googleAuthRoutes = require("./routes/googleAuthRoutes");
+const meetingRoutes = require("./routes/meetingRoutes");
+
 const app = express();
 
 connectDB();
@@ -29,6 +32,13 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+
+// ================================
+// GOOGLE AUTH / MEETINGS
+// ================================
+
+app.use("/api/auth/google", googleAuthRoutes);
+app.use("/api/meetings", meetingRoutes);
 
 // ================================
 // CODING SPACE

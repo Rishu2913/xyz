@@ -1,0 +1,19 @@
+# Environment variables
+server/.env
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+node_modules/
+server/node_modules/
+
+.env
+.env.*
+!.env.example
