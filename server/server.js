@@ -37,25 +37,7 @@ const io = new Server(server, {
 connectDB();
 
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests without an Origin header
-        // (Postman, direct API requests, etc.)
-        if (!origin) {
-            return callback(null, true);
-        }
-
-        // Allow known origins
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-
-        // Allow Vercel preview/deployment URLs
-        if (origin.endsWith(".vercel.app")) {
-            return callback(null, true);
-        }
-
-        return callback(new Error("Not allowed by CORS"));
-    },
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
