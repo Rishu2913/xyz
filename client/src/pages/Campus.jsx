@@ -19,7 +19,7 @@ const SPEED = 4;
 
 // Change this to false after collision boxes
 // are positioned correctly.
-const DEBUG_COLLISION = true;
+const DEBUG_COLLISION = false;
 
 
 // ==========================================
@@ -694,6 +694,18 @@ function Campus() {
     const [leaderboardLoading, setLeaderboardLoading] = useState(false);
     const [nearCodingSpace, setNearCodingSpace] = useState(false);
 
+    const [showMeetingModal, setShowMeetingModal] = useState(false);
+    const [meetingLoading, setMeetingLoading] = useState(false);
+    const [meetingResult, setMeetingResult] = useState(null);
+
+    const [meetingTitle, setMeetingTitle] = useState(
+        "Virtual Campus Meeting"
+    );
+
+    const [meetingStartTime, setMeetingStartTime] = useState("16:00");
+
+    const [meetingDuration, setMeetingDuration] = useState("60");
+
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(
@@ -701,6 +713,7 @@ function Campus() {
     );
 
     const username = storedUser.username || "Player";
+    const userRole = storedUser.role || "student";
 
     const [viewport, setViewport] = useState({
         width: window.innerWidth,
@@ -802,6 +815,136 @@ function Campus() {
     // ======================================
     // FIND NEARBY ROOM
     // ======================================
+
+    const createMeeting = async () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            setMeetingResult({
+                type: "error",
+                message: "You must be logged in."
+            });
+            return;
+        }
+
+        setMeetingLoading(true);
+        setMeetingResult(null);
+
+        try {
+            const now = new Date();
+
+            const [hours, minutes] =
+                meetingStartTime.split(":").map(Number);
+
+            const start = new Date(now);
+
+            start.setHours(hours);
+            start.setMinutes(minutes);
+            start.setSeconds(0);
+            start.setMilliseconds(0);
+
+            // If selected time has already passed today,
+            // schedule it for tomorrow.
+            if (start <= now) {
+                start.setDate(start.getDate() + 1);
+            }
+
+            const end = new Date(
+                start.getTime() +
+                Number(meetingDuration) * 60 * 1000
+            );
+
+            const response = await fetch(
+                "http://localhost:5000/api/meetings",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        title: meetingTitle,
+                        description:
+                            "Virtual Campus Meeting",
+                        startTime: start.toISOString(),
+                        endTime: end.toISOString()
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to create meeting"
+                );
+            }
+
+            setMeetingResult({
+                type: "success",
+                message: "MEETING CREATED!",
+                meetingUrl: data.data.meetingUrl
+            });
+
+        } catch (error) {
+            console.error(
+                "Meeting creation error:",
+                error
+            );
+
+            setMeetingResult({
+                type: "error",
+                message: error.message
+            });
+
+        } finally {
+            setMeetingLoading(false);
+        }
+    };
+
+    const joinMeeting = async () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("No authentication token found");
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "http://localhost:5000/api/meetings/latest",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "No upcoming meeting"
+                );
+            }
+
+            window.open(
+                data.data.meetingUrl,
+                "_blank"
+            );
+
+        } catch (error) {
+            console.error("Join meeting error:", error);
+
+            setMeetingResult({
+                type: "error",
+                message: error.message
+            });
+        }
+    };
 
     const isNearNoticeBoard = (x, y) => {
         const avatarCenterX = x + AVATAR_SIZE / 2;
@@ -921,6 +1064,50 @@ function Campus() {
 
     useEffect(() => {
 
+        const handleMeetingInteraction = (event) => {
+
+            if (
+                event.key.toLowerCase() !== "e" ||
+                !nearRoom ||
+                showLeaderboard ||
+                showMeetingModal
+            ) {
+                return;
+            }
+
+            if (nearRoom.id !== "meeting") {
+                return;
+            }
+
+            if (userRole === "teacher") {
+                setMeetingResult(null);
+                setShowMeetingModal(true);
+            } else {
+                joinMeeting();
+            }
+        };
+
+        window.addEventListener(
+            "keydown",
+            handleMeetingInteraction
+        );
+
+        return () => {
+            window.removeEventListener(
+                "keydown",
+                handleMeetingInteraction
+            );
+        };
+
+    }, [
+        nearRoom,
+        userRole,
+        showLeaderboard,
+        showMeetingModal
+    ]);
+
+    useEffect(() => {
+
         const handleInteraction = (event) => {
 
             const key = event.key.toLowerCase();
@@ -938,6 +1125,13 @@ function Campus() {
                 showLeaderboard
             ) {
                 setShowLeaderboard(false);
+            }
+
+            if (
+                key === "escape" &&
+                showMeetingModal
+            ) {
+                setShowMeetingModal(false);
             }
         };
 
@@ -1634,6 +1828,293 @@ function Campus() {
 
             </div>
 
+            {showMeetingModal && userRole === "teacher" && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+
+                        backgroundColor:
+                            "rgba(0, 0, 0, 0.65)",
+
+                        zIndex: 1000,
+                    }}
+                >
+
+                    <div
+                        style={{
+                            width: "460px",
+                            maxWidth: "90vw",
+
+                            backgroundColor: "#171717",
+
+                            border: "4px solid #f5d742",
+
+                            boxShadow:
+                                "8px 8px 0px #000",
+
+                            color: "#fff",
+
+                            fontFamily:
+                                "'Courier New', monospace",
+
+                            padding: "24px",
+
+                            imageRendering: "pixelated",
+                        }}
+                    >
+
+                        <div
+                            style={{
+                                fontSize: "22px",
+                                fontWeight: "bold",
+
+                                letterSpacing: "2px",
+
+                                paddingBottom: "14px",
+
+                                borderBottom:
+                                    "3px solid #fff",
+
+                                marginBottom: "20px",
+                            }}
+                        >
+                            CREATE MEETING
+                        </div>
+
+
+                        {/* TITLE */}
+
+                        <label>
+                            TITLE
+                        </label>
+
+                        <input
+                            value={meetingTitle}
+                            onChange={(e) =>
+                                setMeetingTitle(e.target.value)
+                            }
+                            style={{
+                                width: "100%",
+                                boxSizing: "border-box",
+
+                                marginTop: "8px",
+                                marginBottom: "20px",
+
+                                padding: "12px",
+
+                                backgroundColor: "#222",
+                                color: "#fff",
+
+                                border: "2px solid #777",
+
+                                fontFamily:
+                                    "'Courier New', monospace",
+                            }}
+                        />
+
+
+                        {/* TIME */}
+
+                        <label>
+                            START TIME
+                        </label>
+
+                        <select
+                            value={meetingStartTime}
+                            onChange={(e) =>
+                                setMeetingStartTime(e.target.value)
+                            }
+                            style={{
+                                width: "100%",
+                                boxSizing: "border-box",
+
+                                marginTop: "8px",
+                                marginBottom: "20px",
+
+                                padding: "12px",
+
+                                backgroundColor: "#222",
+                                color: "#fff",
+
+                                border: "2px solid #777",
+
+                                fontFamily:
+                                    "'Courier New', monospace",
+                            }}
+                        >
+                            <option value="16:00">
+                                04:00 PM
+                            </option>
+
+                            <option value="17:00">
+                                05:00 PM
+                            </option>
+
+                            <option value="18:00">
+                                06:00 PM
+                            </option>
+
+                            <option value="19:00">
+                                07:00 PM
+                            </option>
+
+                            <option value="20:00">
+                                08:00 PM
+                            </option>
+                        </select>
+
+
+                        {/* DURATION */}
+
+                        <label>
+                            DURATION
+                        </label>
+
+                        <select
+                            value={meetingDuration}
+                            onChange={(e) =>
+                                setMeetingDuration(e.target.value)
+                            }
+                            style={{
+                                width: "100%",
+                                boxSizing: "border-box",
+
+                                marginTop: "8px",
+                                marginBottom: "20px",
+
+                                padding: "12px",
+
+                                backgroundColor: "#222",
+                                color: "#fff",
+
+                                border: "2px solid #777",
+
+                                fontFamily:
+                                    "'Courier New', monospace",
+                            }}
+                        >
+                            <option value="30">
+                                30 MINUTES
+                            </option>
+
+                            <option value="60">
+                                60 MINUTES
+                            </option>
+
+                            <option value="90">
+                                90 MINUTES
+                            </option>
+
+                            <option value="120">
+                                120 MINUTES
+                            </option>
+                        </select>
+
+
+                        {/* RESULT */}
+
+                        {meetingResult && (
+                            <div
+                                style={{
+                                    marginBottom: "18px",
+
+                                    padding: "12px",
+
+                                    border:
+                                        meetingResult.type === "success"
+                                            ? "2px solid #54e38e"
+                                            : "2px solid #ff5c5c",
+
+                                    color:
+                                        meetingResult.type === "success"
+                                            ? "#54e38e"
+                                            : "#ff5c5c",
+
+                                    wordBreak: "break-word",
+                                }}
+                            >
+                                {meetingResult.message}
+
+                                {meetingResult.meetingUrl && (
+                                    <div
+                                        style={{
+                                            marginTop: "10px",
+                                            fontSize: "12px",
+                                        }}
+                                    >
+                                        {meetingResult.meetingUrl}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+
+                        {/* CREATE */}
+
+                        <button
+                            onClick={createMeeting}
+                            disabled={meetingLoading}
+                            style={{
+                                width: "100%",
+
+                                padding: "14px",
+
+                                backgroundColor:
+                                    "#f5d742",
+
+                                color: "#000",
+
+                                border: "3px solid #fff",
+
+                                fontFamily:
+                                    "'Courier New', monospace",
+
+                                fontWeight: "bold",
+
+                                cursor: "pointer",
+
+                                marginBottom: "12px",
+                            }}
+                        >
+                            {meetingLoading
+                                ? "CREATING..."
+                                : "CREATE MEETING"}
+                        </button>
+
+
+                        <button
+                            onClick={() =>
+                                setShowMeetingModal(false)
+                            }
+                            style={{
+                                width: "100%",
+
+                                padding: "12px",
+
+                                backgroundColor: "#222",
+
+                                color: "#fff",
+
+                                border: "2px solid #777",
+
+                                fontFamily:
+                                    "'Courier New', monospace",
+
+                                cursor: "pointer",
+                            }}
+                        >
+                            ESC / CANCEL
+                        </button>
+
+                    </div>
+                </div>
+            )}
+
             {showLeaderboard && (
                 <div
                     style={{
@@ -1825,6 +2306,51 @@ function Campus() {
 
                 </div>
             )}
+
+            {nearRoom?.id === "meeting" &&
+                !showMeetingModal &&
+                !showLeaderboard && (
+                    <div
+                        style={{
+                            position: "fixed",
+                            bottom: "40px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+
+                            backgroundColor:
+                                "rgba(0, 0, 0, 0.9)",
+
+                            color: "#fff",
+
+                            padding: "14px 24px",
+
+                            fontFamily:
+                                "'Courier New', monospace",
+
+                            fontSize: "17px",
+
+                            zIndex: 100,
+
+                            border: "3px solid #f5d742",
+
+                            boxShadow:
+                                "6px 6px 0px #000",
+
+                            imageRendering: "pixelated",
+                        }}
+                    >
+                        PRESS{" "}
+                        <strong style={{ color: "#f5d742" }}>
+                            E
+                        </strong>{" "}
+                        TO{" "}
+                        <strong>
+                            {userRole === "teacher"
+                                ? "CREATE MEETING"
+                                : "JOIN MEETING"}
+                        </strong>
+                    </div>
+                )}
 
             {nearNoticeBoard &&
                 !nearRoom &&
