@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Auth from "./pages/Auth";
 import Campus from "./pages/Campus";
 
 function Placeholder({ name }) {
@@ -19,6 +21,12 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+
+                {/* Frontend */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Auth />} />
+
+                {/* Avatar Movement / Campus */}
                 <Route path="/campus" element={<Campus />} />
 
                 <Route
@@ -40,6 +48,7 @@ function App() {
                     path="/coding-space"
                     element={<Placeholder name="Coding Space" />}
                 />
+
             </Routes>
         </BrowserRouter>
     );
