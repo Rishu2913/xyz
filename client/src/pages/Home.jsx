@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 import edunaLogo from "../assests/eduna-logo.png";
@@ -17,6 +19,8 @@ import connect from "../assests/connect.png";
 import arena from "../assests/arena.png";
 
 function Home() {
+    const navigate = useNavigate();
+    const isLoggedIn = !!localStorage.getItem("token");
     return (
         <>
             {/* ================= HEADER ================= */}
@@ -72,13 +76,24 @@ function Home() {
                     </div>
 
                     {/* LOGIN */}
-                    <Link to="/login" className="login-btn">
-                        Login
-                    </Link>
+                    {!isLoggedIn && (
+                        <Link to="/login" className="login-btn">
+                            Login
+                        </Link>
+                    )}
 
-                    <Link to="/login" className="started-btn">
+                    <button
+                        className="started-btn"
+                        onClick={() => {
+                            if (isLoggedIn) {
+                                navigate("/campus");
+                            } else {
+                                navigate("/login");
+                            }
+                        }}
+                    >
                         Get Started
-                    </Link>
+                    </button>
 
                 </div>
 
