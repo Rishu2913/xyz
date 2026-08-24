@@ -52,7 +52,39 @@ const problemSchema = new mongoose.Schema(
         points: {
             type: Number,
             default: 100
-        }
+        },
+
+        // Maximum allowed execution time in milliseconds
+        timeLimit: {
+            type: Number,
+            default: 2000
+        },
+
+        // Maximum allowed memory in MB
+        memoryLimit: {
+            type: Number,
+            default: 256
+        },
+
+        // Hidden test cases used by the judge
+        testCases: [
+            {
+                input: {
+                    type: String,
+                    required: true
+                },
+
+                expectedOutput: {
+                    type: String,
+                    required: true
+                },
+
+                points: {
+                    type: Number,
+                    default: 0
+                }
+            }
+        ]
     },
     {
         timestamps: true

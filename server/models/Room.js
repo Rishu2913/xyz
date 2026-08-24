@@ -27,7 +27,13 @@ const roomSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true
-        }
+        },
+
+        participants: [
+            {
+                type: String
+            }
+        ]
     },
     {
         timestamps: true
