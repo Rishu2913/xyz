@@ -37,11 +37,28 @@ const io = new Server(server, {
 connectDB();
 
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "https://xyz-eeftlsvzw-shrinkydonkeys-projects.vercel.app"
-    ],
-    credentials: true
+    origin: (origin, callback) => {
+        // Allow requests without an Origin header
+        // (Postman, direct API requests, etc.)
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        // Allow known origins
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        // Allow Vercel preview/deployment URLs
+        if (origin.endsWith(".vercel.app")) {
+            return callback(null, true);
+        }
+
+        return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
