@@ -673,6 +673,12 @@ function Campus() {
 
     const navigate = useNavigate();
 
+    const storedUser = JSON.parse(
+        localStorage.getItem("user") || "{}"
+    );
+
+    const username = storedUser.username || "Player";
+
     const [viewport, setViewport] = useState({
         width: window.innerWidth,
         height: window.innerHeight,
@@ -1349,6 +1355,7 @@ function Campus() {
                     position={position}
                     direction={direction}
                     image={avatarImage}
+                    username={username}
                 />
 
 
