@@ -762,7 +762,7 @@ function Campus() {
 
         try {
             const response = await fetch(
-                "http://localhost:5000/api/leaderboard"
+                "http://eduna.onrender.com/api/leaderboard"
             );
 
             const data = await response.json();
@@ -860,7 +860,7 @@ function Campus() {
             );
 
             const response = await fetch(
-                "http://localhost:5000/api/meetings",
+                "http://eduna.onrender.com/api/meetings",
                 {
                     method: "POST",
 
@@ -919,7 +919,7 @@ function Campus() {
 
         try {
             const response = await fetch(
-                "http://localhost:5000/api/meetings/latest",
+                "http://eduna.onrender.com/api/meetings/latest",
                 {
                     method: "GET",
                     headers: {
@@ -1121,7 +1121,7 @@ function Campus() {
 
 
     useEffect(() => {
-        const socket = io("http://localhost:5000");
+        const socket = io("https://eduna.onrender.com");
 
         socketRef.current = socket;
 
