@@ -1121,34 +1121,34 @@ function Campus() {
     // ENTER ROOM
     // ======================================
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const handleInteraction = (event) => {
+    //     const handleInteraction = (event) => {
 
-            if (
-                event.key.toLowerCase() === "e" &&
-                nearRoom
-            ) {
-                navigate(nearRoom.route);
-            }
-        };
-
-
-        window.addEventListener(
-            "keydown",
-            handleInteraction
-        );
+    //         if (
+    //             event.key.toLowerCase() === "e" &&
+    //             nearRoom
+    //         ) {
+    //             navigate(nearRoom.route);
+    //         }
+    //     };
 
 
-        return () => {
+    //     window.addEventListener(
+    //         "keydown",
+    //         handleInteraction
+    //     );
 
-            window.removeEventListener(
-                "keydown",
-                handleInteraction
-            );
-        };
 
-    }, [nearRoom, navigate]);
+    //     return () => {
+
+    //         window.removeEventListener(
+    //             "keydown",
+    //             handleInteraction
+    //         );
+    //     };
+
+    // }, [nearRoom, navigate]);
 
 
     // ======================================
@@ -1363,7 +1363,7 @@ function Campus() {
                     ENTER ROOM MESSAGE
                 ================================== */}
 
-                {nearRoom && (
+                {/* {nearRoom && (
 
                     <div
                         style={{
@@ -1399,16 +1399,16 @@ function Campus() {
                         }}
                     >
 
-                        Press{" "}
+                        { Press{" "}
                         <strong>E</strong>{" "}
                         to enter{" "}
                         <strong>
                             {nearRoom.name}
-                        </strong>
+                        </strong> }
 
                     </div>
 
-                )}
+                )} */}
 
             </div>
 
