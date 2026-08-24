@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const problemRoutes = require("./routes/problemRoutes");
 
 dotenv.config();
 
@@ -9,8 +10,12 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173"
+}));
+
 app.use(express.json());
+app.use("/api/problems", problemRoutes);
 
 const roomRoutes = require("./routes/roomRoutes");
 const submissionRoutes = require("./routes/submissionRoutes");

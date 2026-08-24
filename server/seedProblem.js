@@ -56,7 +56,7 @@ const problem = {
         },
         {
             input: "1 5 8 12\n13",
-            expectedOutput: "0 3",
+            expectedOutput: "1 2",
             points: 20
         },
         {
@@ -79,6 +79,13 @@ async function seedProblem() {
                 new: true
             }
         );
+
+        const savedProblem = await Problem.findById(problemId);
+
+        // console.log(
+        //     "TEST CASES IN DATABASE:",
+        //     savedProblem.testCases
+        // );
 
         console.log("Test problem created successfully.");
         console.log("Problem ID:", problemId.toString());

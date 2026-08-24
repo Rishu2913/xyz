@@ -64,6 +64,15 @@ const runProgram = (command, args, input, timeout) => {
 };
 
 const judgeSubmission = async (submission, problem) => {
+    console.log(
+        "NUMBER OF TEST CASES:",
+        problem.testCases?.length
+    );
+
+    console.log(
+        "TEST CASES:",
+        problem.testCases
+    );
     const tempDir = fs.mkdtempSync(
         path.join(os.tmpdir(), `coding-${crypto.randomUUID()}-`)
     );
@@ -157,6 +166,8 @@ const judgeSubmission = async (submission, problem) => {
             const startTime = process.hrtime.bigint();
 
             try {
+                console.log("TEST INPUT:", JSON.stringify(testCase.input));
+                console.log("EXPECTED:", JSON.stringify(testCase.expectedOutput));
                 const result = await runProgram(
                     runCommandName,
                     runArgs,
@@ -190,6 +201,9 @@ const judgeSubmission = async (submission, problem) => {
                     normalizeOutput(
                         testCase.expectedOutput
                     );
+
+                // console.log("ACTUAL:", JSON.stringify(actualOutput));
+                // console.log("EXPECTED:", JSON.stringify(expectedOutput));
 
                 // Wrong answer
                 if (actualOutput !== expectedOutput) {
