@@ -919,7 +919,7 @@ function Campus() {
 
         try {
             const response = await fetch(
-                "http://eduna.onrender.com/api/meetings/latest",
+                "https://eduna.onrender.com/api/meetings/latest",
                 {
                     method: "GET",
                     headers: {
