@@ -762,7 +762,7 @@ function Campus() {
 
         try {
             const response = await fetch(
-                "http://eduna.onrender.com/api/leaderboard"
+                "https://eduna.onrender.com/api/leaderboard"
             );
 
             const data = await response.json();
@@ -860,7 +860,7 @@ function Campus() {
             );
 
             const response = await fetch(
-                "http://eduna.onrender.com/api/meetings",
+                "https://eduna.onrender.com/api/meetings",
                 {
                     method: "POST",
 
