@@ -25,15 +25,25 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "https://xyz-beta-eight.vercel.app",
-        methods: ["GET", "POST"]
+        origin: [
+            "http://localhost:5173",
+            "https://xyz-eeftlsvzw-shrinkydonkeys-projects.vercel.app"
+        ],
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
 connectDB();
 
+const cors = require("cors");
+
 app.use(cors({
-    origin: "https://xyz-beta-eight.vercel.app"
+    origin: [
+        "http://localhost:5173",
+        "https://xyz-eeftlsvzw-shrinkydonkeys-projects.vercel.app"
+    ],
+    credentials: true
 }));
 
 app.use(express.json());
