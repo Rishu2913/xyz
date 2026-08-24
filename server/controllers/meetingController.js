@@ -1,6 +1,45 @@
 const Meeting = require("../models/Meeting");
 const { createGoogleMeet } = require("../services/googleMeetService");
 
+const getLatestMeeting = async (req, res) => {
+    try {
+        const meeting = await Meeting.findOne({
+            endTime: { $gt: new Date() }
+        })
+        .sort({ startTime: 1 });
+
+        if (!meeting) {
+            return res.status(404).json({
+                success: false,
+                message: "No upcoming meeting",
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                id: meeting._id,
+                title: meeting.title,
+                description: meeting.description,
+                meetingUrl: meeting.meetingUrl,
+                startTime: meeting.startTime,
+                endTime: meeting.endTime,
+                createdBy: meeting.createdBy
+            }
+        });
+
+    } catch (error) {
+        console.error("Get latest meeting error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch meeting",
+            data: null
+        });
+    }
+};
+
 const createMeeting = async (req, res) => {
     try {
         const {
@@ -86,5 +125,6 @@ const createMeeting = async (req, res) => {
 };
 
 module.exports = {
-    createMeeting
+    createMeeting,
+    getLatestMeeting
 };

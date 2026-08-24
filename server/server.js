@@ -3,11 +3,15 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
+const cors = require("cors");
 
 const googleAuthRoutes = require("./routes/googleAuthRoutes");
 const meetingRoutes = require("./routes/meetingRoutes");
 
 const app = express();
+app.use(cors({
+    origin: "http://localhost:5173"
+}));
 
 app.use(express.json());
 
