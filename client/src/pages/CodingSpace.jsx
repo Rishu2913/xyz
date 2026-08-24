@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CodingSpace.css";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://eduna.onrender.com";
 
 const PROBLEM_ID = "507f191e810c19729de860ea";
 
