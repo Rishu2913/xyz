@@ -19,7 +19,7 @@ const SPEED = 4;
 
 // Change this to false after collision boxes
 // are positioned correctly.
-const DEBUG_COLLISION = false;
+const DEBUG_COLLISION = true;
 
 
 // ==========================================
@@ -112,6 +112,14 @@ const CODING_INTERACTION = {
     width: 200,
     height: 80,
     interactionDistance: 70,
+};
+
+const NOTICE_BOARD_INTERACTION = {
+    x: 1120,
+    y: 520,
+    width: 190,
+    height: 80,
+    interactionDistance: 90,
 };
 
 
@@ -679,6 +687,11 @@ const COLLISION_BOXES = [
 
 function Campus() {
 
+    const [nearNoticeBoard, setNearNoticeBoard] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [leaderboardLoading, setLeaderboardLoading] = useState(false);
     const [nearCodingSpace, setNearCodingSpace] = useState(false);
 
     const navigate = useNavigate();
@@ -725,6 +738,38 @@ function Campus() {
     // COLLISION CHECK
     // ======================================
 
+    const openLeaderboard = async () => {
+        setShowLeaderboard(true);
+        setLeaderboardLoading(true);
+
+        try {
+            const response = await fetch(
+                "http://localhost:5000/api/leaderboard"
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to load leaderboard"
+                );
+            }
+
+            setLeaderboard(data.leaderboard || []);
+
+        } catch (error) {
+            console.error(
+                "Leaderboard error:",
+                error
+            );
+
+            setLeaderboard([]);
+
+        } finally {
+            setLeaderboardLoading(false);
+        }
+};
+
     const checkCollision = (x, y) => {
 
         const player = {
@@ -757,6 +802,26 @@ function Campus() {
     // ======================================
     // FIND NEARBY ROOM
     // ======================================
+
+    const isNearNoticeBoard = (x, y) => {
+        const avatarCenterX = x + AVATAR_SIZE / 2;
+        const avatarCenterY = y + AVATAR_SIZE / 2;
+
+        const centerX =
+            NOTICE_BOARD_INTERACTION.x +
+            NOTICE_BOARD_INTERACTION.width / 2;
+
+        const centerY =
+            NOTICE_BOARD_INTERACTION.y +
+            NOTICE_BOARD_INTERACTION.height / 2;
+
+        const distance = Math.hypot(
+            avatarCenterX - centerX,
+            avatarCenterY - centerY
+        );
+
+        return distance <= NOTICE_BOARD_INTERACTION.interactionDistance;
+    };
 
     const isNearCodingSpace = (x, y) => {
         const avatarCenterX = x + AVATAR_SIZE / 2;
@@ -853,6 +918,42 @@ function Campus() {
     // ======================================
     // KEYBOARD
     // ======================================
+
+    useEffect(() => {
+
+        const handleInteraction = (event) => {
+
+            const key = event.key.toLowerCase();
+
+            if (
+                key === "e" &&
+                nearNoticeBoard &&
+                !showLeaderboard
+            ) {
+                openLeaderboard();
+            }
+
+            if (
+                key === "escape" &&
+                showLeaderboard
+            ) {
+                setShowLeaderboard(false);
+            }
+        };
+
+        window.addEventListener(
+            "keydown",
+            handleInteraction
+        );
+
+        return () => {
+            window.removeEventListener(
+                "keydown",
+                handleInteraction
+            );
+        };
+
+    }, [nearNoticeBoard, showLeaderboard]);
 
     useEffect(() => {
 
@@ -1087,6 +1188,9 @@ function Campus() {
 
                 const room = getNearbyRoom(x, y);
                 setNearRoom(room);
+
+                const noticeNearby = isNearNoticeBoard(x, y);
+                setNearNoticeBoard(noticeNearby);
 
                 // const codingNearby = isNearCodingSpace(x, y);
                 // setNearCodingSpace(codingNearby);
@@ -1368,6 +1472,27 @@ function Campus() {
                     ROOM DEBUG / DOOR MARKERS
                 ================================== */}
 
+                {DEBUG_COLLISION && (
+                    <div
+                        style={{
+                            position: "absolute",
+
+                            left: NOTICE_BOARD_INTERACTION.x,
+                            top: NOTICE_BOARD_INTERACTION.y,
+
+                            width: NOTICE_BOARD_INTERACTION.width,
+                            height: NOTICE_BOARD_INTERACTION.height,
+
+                            backgroundColor: "rgba(255, 255, 0, 0.35)",
+                            border: "3px solid yellow",
+
+                            boxSizing: "border-box",
+                            pointerEvents: "none",
+                            zIndex: 20,
+                        }}
+                    />
+                )}
+
                 {DEBUG_COLLISION &&
                     ROOMS.map((room) => {
 
@@ -1508,6 +1633,227 @@ function Campus() {
                 )} */}
 
             </div>
+
+            {showLeaderboard && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+
+                        backgroundColor: "rgba(0, 0, 0, 0.55)",
+
+                        zIndex: 1000,
+                    }}
+                >
+
+                    <div
+                        style={{
+                            width: "520px",
+                            maxWidth: "90vw",
+
+                            backgroundColor: "#171717",
+
+                            border: "4px solid #f5f5f5",
+
+                            boxShadow:
+                                "8px 8px 0px #000",
+
+                            color: "#fff",
+
+                            fontFamily:
+                                "'Courier New', monospace",
+
+                            imageRendering: "pixelated",
+                        }}
+                    >
+
+                        {/* HEADER */}
+
+                        <div
+                            style={{
+                                padding: "16px 20px",
+
+                                borderBottom:
+                                    "3px solid #fff",
+
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}
+                        >
+
+                            <div
+                                style={{
+                                    fontSize: "22px",
+                                    fontWeight: "bold",
+                                    letterSpacing: "2px",
+                                }}
+                            >
+                                🏆 LEADERBOARD
+                            </div>
+
+                            <button
+                                onClick={() =>
+                                    setShowLeaderboard(false)
+                                }
+                                style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "#fff",
+
+                                    fontFamily:
+                                        "'Courier New', monospace",
+
+                                    fontSize: "22px",
+                                    fontWeight: "bold",
+
+                                    cursor: "pointer",
+                                }}
+                            >
+                                X
+                            </button>
+
+                        </div>
+
+
+                        {/* CONTENT */}
+
+                        <div
+                            style={{
+                                padding: "15px 20px",
+                                maxHeight: "420px",
+                                overflowY: "auto",
+                            }}
+                        >
+
+                            {leaderboardLoading ? (
+
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        padding: "40px 0",
+                                        fontSize: "18px",
+                                    }}
+                                >
+                                    LOADING...
+                                </div>
+
+                            ) : leaderboard.length === 0 ? (
+
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        padding: "40px 0",
+                                    }}
+                                >
+                                    NO SCORES YET
+                                </div>
+
+                            ) : (
+
+                                leaderboard.map((student, index) => (
+
+                                    <div
+                                        key={student._id}
+                                        style={{
+                                            display: "grid",
+                                            gridTemplateColumns:
+                                                "60px 1fr 100px",
+
+                                            alignItems: "center",
+
+                                            padding: "12px 8px",
+
+                                            borderBottom:
+                                                "2px solid #444",
+                                        }}
+                                    >
+
+                                        <div
+                                            style={{
+                                                fontWeight: "bold",
+                                                fontSize: "18px",
+                                            }}
+                                        >
+                                            #{student.rank || index + 1}
+                                        </div>
+
+                                        <div>
+                                            {student.username}
+                                        </div>
+
+                                        <div
+                                            style={{
+                                                textAlign: "right",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            {student.totalScore}
+                                        </div>
+
+                                    </div>
+
+                                ))
+
+                            )}
+
+                        </div>
+
+
+                        {/* FOOTER */}
+
+                        <div
+                            style={{
+                                padding: "12px 20px",
+
+                                borderTop:
+                                    "3px solid #fff",
+
+                                fontSize: "13px",
+                                textAlign: "center",
+                                opacity: 0.7,
+                            }}
+                        >
+                            PRESS ESC TO CLOSE
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
+
+            {nearNoticeBoard &&
+                !nearRoom &&
+                !nearCodingSpace &&
+                !showLeaderboard && (
+                    <div
+                        style={{
+                            position: "fixed",
+                            bottom: "40px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+
+                            backgroundColor: "rgba(0, 0, 0, 0.85)",
+                            color: "white",
+
+                            padding: "12px 20px",
+                            borderRadius: "8px",
+
+                            fontFamily: "monospace",
+                            fontSize: "16px",
+
+                            zIndex: 100,
+                            border: "2px solid #fff",
+                        }}
+                    >
+                        Press <strong>E</strong> to view{" "}
+                        <strong>Leaderboard</strong>
+                    </div>
+            )}
 
             {nearCodingSpace && (
                 <div

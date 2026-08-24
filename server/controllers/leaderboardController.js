@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Submission = require("../models/Submission");
+const User = require("../models/User");
 
 const getLeaderboard = async (req, res) => {
     try {
@@ -94,6 +95,26 @@ const getLeaderboard = async (req, res) => {
         leaderboard.forEach((student, index) => {
             currentRank = index + 1;
             student.rank = currentRank;
+        });
+
+        const userIds = leaderboard.map(
+            student => student._id
+        );
+
+        const users = await User.find({
+            _id: { $in: userIds }
+        }).select("_id username name");
+
+        const userMap = new Map(
+            users.map(user => [
+                user._id.toString(),
+                user.username
+            ])
+        );
+
+        leaderboard.forEach(student => {
+            student.username =
+                userMap.get(student._id.toString()) || "Unknown";
         });
 
         return res.status(200).json({
