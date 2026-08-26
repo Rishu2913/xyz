@@ -207,44 +207,49 @@ Eduna is designed to run as a complete cloud application.
 ---
 
 ## 🛠️ Tech Stack
-Frontend
-```
-Technology	Purpose
-⚛️ React	UI & application architecture
-⚡ Vite	Development & production build
-🎨 CSS	Styling & UI
-🔌 Socket.IO Client	Real-time multiplayer
-🧭 React Router	Application navigation
-```
 
-Backend
-```
-Technology	Purpose
-🟢 Node.js	Runtime
-🚂 Express.js	REST API
-🔌 Socket.IO	Real-time communication
-🔐 JWT	Authentication
-🔑 Google OAuth	Google authentication
-🗄️ Mongoose	MongoDB object modeling
-Database
-```
+### Frontend
 
-MongoDB Atlas
+| Technology | Purpose |
+|---|---|
+| ⚛️ React | UI & application architecture |
+| ⚡ Vite | Development & production build |
+| 🎨 CSS | Styling & UI |
+| 🔌 Socket.IO Client | Real-time multiplayer |
+| 🧭 React Router | Application navigation |
+
+### Backend
+
+| Technology | Purpose |
+|---|---|
+| 🟢 Node.js | Runtime |
+| 🚂 Express.js | REST API |
+| 🔌 Socket.IO | Real-time communication |
+| 🔐 JWT | Authentication |
+| 🔑 Google OAuth | Google authentication |
+| 🗄️ Mongoose | MongoDB object modeling |
+
+### Database
+
+**MongoDB Atlas**
 
 Used for:
 
-Users
-Problems
-Submissions
-Rooms
-Leaderboards
-Meetings
-Learning resources
-Deployment
-Service	Purpose
-▲ Vercel	Frontend
-🚀 Render	Backend
-🍃 MongoDB Atlas	Database
+- Users
+- Problems
+- Submissions
+- Rooms
+- Leaderboards
+- Meetings
+- Learning resources
+
+### Deployment
+
+| Service | Purpose |
+|---|---|
+| ▲ Vercel | Frontend |
+| 🚀 Render | Backend |
+| 🍃 MongoDB Atlas | Database |
 
 ---
 
