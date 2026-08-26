@@ -477,7 +477,7 @@ Vinay Tiwari
 
 ---
 
-##🎯 Why Eduna?
+## 🎯 Why Eduna?
 
 Traditional educational platforms answer:
 
