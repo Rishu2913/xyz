@@ -71,7 +71,10 @@ Student B
 
 ```
 
+
 This makes the campus feel like an actual shared environment rather than a static website.
+
+---
 
 ## 💻 Coding Space
 
@@ -98,6 +101,8 @@ add up to target.
 
 Students can write and submit their solution without leaving the Eduna environment.
 
+---
+
 ## 🏆 Leaderboard
 
 Coding performance can be reflected through a leaderboard.
@@ -111,6 +116,8 @@ Participate in a more engaging coding environment
 
 This introduces a competitive layer to the learning experience.
 
+---
+
 ## 🤝 Meeting & Collaboration
 
 Eduna also provides a meeting experience for collaborative learning.
@@ -123,6 +130,8 @@ Collaborate with other students
 Move between independent learning and group activities
 
 The goal is to connect individual learning + collaborative learning inside the same campus.
+
+---
 
 ## 📚 Digital Library
 
@@ -154,6 +163,8 @@ The system supports different resource types including:
 📰 Article
 
 For the university's existing digital library, Eduna can also act as an entry point rather than attempting to rebuild an entire library system.
+
+---
 
 ## 🔐 Authentication
 
@@ -192,6 +203,8 @@ Eduna is designed to run as a complete cloud application.
                    └─────────────────────┘
 
 ```
+
+---
 
 ## 🛠️ Tech Stack
 Frontend
@@ -233,6 +246,7 @@ Service	Purpose
 🚀 Render	Backend
 🍃 MongoDB Atlas	Database
 
+---
 
 ### 📂 Project Structure
 ```
@@ -269,6 +283,8 @@ xyz/
 └── README.md
 
 ```
+
+---
 
 ## ⚙️ Getting Started 
 
@@ -336,6 +352,8 @@ The backend requires the MongoDB Atlas connection string.
 
 ## ⚠️ Never commit .env files or API secrets to GitHub.
 
+---
+
 ## 🔌 API Overview
 
 Authentication
@@ -356,6 +374,8 @@ GET /api/meetings/latest
 GET /api/meetings
 ```
 
+---
+
 ## ⚡ Real-Time Events
 
 Socket.IO powers the multiplayer experience.
@@ -370,6 +390,8 @@ player:moved
 player:left
 
 This allows the campus to synchronize player states in real time.
+
+---
 
 ## 🧠 Product Philosophy
 
@@ -397,6 +419,8 @@ Instead, it creates a common interactive layer around the existing student exper
 The goal is simple:
 
 Turn the digital university from a collection of tabs into a place.
+
+---
 
 ## 🗺️ Roadmap
 
@@ -430,6 +454,8 @@ Turn the digital university from a collection of tabs into a place.
  Richer multiplayer interactions
 ```
 
+---
+
 ## 👨‍💻 Team
 
 Built with ❤️ during a hackathon.
@@ -444,6 +470,8 @@ Piyush Samal
 Vinay Tiwari
 ```
 
+---
+
 ##🎯 Why Eduna?
 
 Traditional educational platforms answer:
@@ -455,6 +483,8 @@ Eduna asks:
 "Where are the students?"
 
 We believe learning becomes more engaging when students can see, meet, collaborate and compete with others.
+
+---
 
 ## ⭐ Support
 
