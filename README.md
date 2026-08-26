@@ -69,9 +69,11 @@ Socket.IO Server
     ▼
 Student B
 
+```
+
 This makes the campus feel like an actual shared environment rather than a static website.
 
-💻 Coding Space
+## 💻 Coding Space
 
 Students can enter a dedicated coding environment directly from the campus.
 
@@ -85,7 +87,9 @@ Current MVP includes:
 💻 Code editor
 🚀 Code submission
 🏆 Leaderboard
-Example Problem
+
+
+## Example Problem
 Two Sum
 
 Given an array of integers nums and an integer target,
@@ -94,7 +98,7 @@ add up to target.
 
 Students can write and submit their solution without leaving the Eduna environment.
 
-🏆 Leaderboard
+## 🏆 Leaderboard
 
 Coding performance can be reflected through a leaderboard.
 
@@ -107,7 +111,7 @@ Participate in a more engaging coding environment
 
 This introduces a competitive layer to the learning experience.
 
-🤝 Meeting & Collaboration
+## 🤝 Meeting & Collaboration
 
 Eduna also provides a meeting experience for collaborative learning.
 
@@ -120,7 +124,7 @@ Move between independent learning and group activities
 
 The goal is to connect individual learning + collaborative learning inside the same campus.
 
-📚 Digital Library
+## 📚 Digital Library
 
 The library provides curated technical learning resources.
 
@@ -151,7 +155,7 @@ The system supports different resource types including:
 
 For the university's existing digital library, Eduna can also act as an entry point rather than attempting to rebuild an entire library system.
 
-🔐 Authentication
+## 🔐 Authentication
 
 Eduna includes user authentication to provide personalized experiences.
 
@@ -165,6 +169,8 @@ Protected user functionality
 ☁️ Cloud Deployment
 
 Eduna is designed to run as a complete cloud application.
+
+```text
 
                    ┌─────────────────────┐
                    │      Vercel         │
@@ -184,15 +190,22 @@ Eduna is designed to run as a complete cloud application.
                    │    MongoDB Atlas    │
                    │      Database       │
                    └─────────────────────┘
-🛠️ Tech Stack
+
+```
+
+## 🛠️ Tech Stack
 Frontend
+```
 Technology	Purpose
 ⚛️ React	UI & application architecture
 ⚡ Vite	Development & production build
 🎨 CSS	Styling & UI
 🔌 Socket.IO Client	Real-time multiplayer
 🧭 React Router	Application navigation
+```
+
 Backend
+```
 Technology	Purpose
 🟢 Node.js	Runtime
 🚂 Express.js	REST API
@@ -201,6 +214,7 @@ Technology	Purpose
 🔑 Google OAuth	Google authentication
 🗄️ Mongoose	MongoDB object modeling
 Database
+```
 
 MongoDB Atlas
 
@@ -218,7 +232,10 @@ Service	Purpose
 ▲ Vercel	Frontend
 🚀 Render	Backend
 🍃 MongoDB Atlas	Database
-📂 Project Structure
+
+
+### 📂 Project Structure
+```
 xyz/
 │
 ├── client/
@@ -250,10 +267,15 @@ xyz/
 │   └── package.json
 │
 └── README.md
-⚙️ Getting Started
+
+```
+
+## ⚙️ Getting Started 
+
 1️⃣ Clone the repository
 git clone https://github.com/Rishu2913/xyz.git
 cd xyz
+
 2️⃣ Setup Backend
 cd server
 npm install
@@ -279,6 +301,7 @@ npm start
 Backend runs on:
 
 http://localhost:5000
+
 3️⃣ Setup Frontend
 
 Open another terminal:
@@ -311,10 +334,12 @@ VITE_API_URL=https://your-render-backend-url
 
 The backend requires the MongoDB Atlas connection string.
 
-⚠️ Never commit .env files or API secrets to GitHub.
+## ⚠️ Never commit .env files or API secrets to GitHub.
 
-🔌 API Overview
+## 🔌 API Overview
+
 Authentication
+```
 POST /api/auth/register
 POST /api/auth/login
 Problems
@@ -329,7 +354,9 @@ GET /api/leaderboard
 Meetings
 GET /api/meetings/latest
 GET /api/meetings
-⚡ Real-Time Events
+```
+
+## ⚡ Real-Time Events
 
 Socket.IO powers the multiplayer experience.
 
@@ -344,11 +371,13 @@ player:left
 
 This allows the campus to synchronize player states in real time.
 
-🧠 Product Philosophy
+## 🧠 Product Philosophy
 
 Eduna isn't trying to replace every educational platform.
 
 Instead, it creates a common interactive layer around the existing student experience.
+
+```
 
                 ┌───────────────┐
                 │    EDUNA      │
@@ -363,12 +392,16 @@ Instead, it creates a common interactive layer around the existing student exper
                         ▼
                  🏆 Competition
 
+```
+
 The goal is simple:
 
 Turn the digital university from a collection of tabs into a place.
 
-🗺️ Roadmap
+## 🗺️ Roadmap
+
 ✅ MVP
+```
  User authentication
  Virtual campus
  Avatar movement
@@ -380,7 +413,10 @@ Turn the digital university from a collection of tabs into a place.
  Meeting integration
  Digital learning resources
  Cloud deployment
+```
+ 
 🔮 Future
+```
  More interactive campus buildings
  Real-time chat
  Campus events
@@ -392,19 +428,23 @@ Turn the digital university from a collection of tabs into a place.
  Student profiles
  University system integrations
  Richer multiplayer interactions
-👨‍💻 Team
+```
+
+## 👨‍💻 Team
 
 Built with ❤️ during a hackathon.
 
 Contributors
+```
 Rishu Raj Singh
 Deepanshu Karki
 Khushboo Sharma
 Chaman Kumar
 Piyush Samal
 Vinay Tiwari
-Team Eduna
-🎯 Why Eduna?
+```
+
+##🎯 Why Eduna?
 
 Traditional educational platforms answer:
 
@@ -416,6 +456,6 @@ Eduna asks:
 
 We believe learning becomes more engaging when students can see, meet, collaborate and compete with others.
 
-⭐ Support
+## ⭐ Support
 
 If you like the idea behind Eduna, consider giving the repository a ⭐.
